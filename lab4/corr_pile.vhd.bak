@@ -1,0 +1,60 @@
+
+
+--*********************************************************************************
+--		PILE GENERIQUE (un paramètre permet de déterminer la taille de la pile)
+--*********************************************************************************
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+--/////////////////////
+--    A COMPLETER
+--/////////////////////
+entity pile_ref is
+  generic( taille_pile : integer := 8);
+  port( ld_pile_ref,raz_pile_ref : in std_logic;
+        calc,clk : in std_logic;
+        d_in:in std_logic_vector (7 downto 0);
+        Sout:	out std_logic_vector (7 downto 0));
+end pile_ref;
+
+architecture arch_pile_ref of pile_ref is
+ 
+  type type_buffer is array (0 to taille_pile-1) of std_logic_vector (7 downto 0);
+  signal buf : type_buffer; -- La mémoire
+  
+	begin
+	  process(clk)
+	 
+       variable buf_tmp :std_logic_vector(7 downto 0); 
+	    begin   
+	      
+	      if rising_edge(clk) then
+	      
+	       if (raz_pile_ref ='1') then 
+	           loopraz: FOR b IN 0 TO taille_pile-1 LOOP 
+                    buf(b)<="00000000";
+              END LOOP loopraz;	     
+	       elsif
+	            (ld_pile_ref='1') then 
+                loop1: FOR a IN 1 TO taille_pile-1 LOOP
+                       buf(taille_pile-a)<=buf(taille_pile-a-1);
+                  END LOOP loop1;
+               buf(0)<=d_in;
+	       
+	       elsif calc='1' then
+	          buf_tmp :=buf(taille_pile-1);
+	           loopcalc: FOR c IN 1 TO taille_pile-1 LOOP
+                    buf(taille_pile-c)<=buf(taille_pile-c-1);
+              END LOOP loopcalc;
+              buf(0)<=buf_tmp;
+	       
+	    end if;
+	    end if;	                    
+	end process;
+	
+
+	  
+	  Sout<=buf(taille_pile-1);
+	
+	end arch_pile_ref;

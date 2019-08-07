@@ -1,0 +1,36 @@
+--*********************************************************************************
+--		REGISTRE GENERIQUE : taille de l'entrée et taille de la sortie paramétrables
+--*********************************************************************************
+library IEEE;
+use IEEE.std_logic_1164.all;
+use IEEE.numeric_std.all;
+
+--/////////////////////
+--    A COMPLETER
+--/////////////////////
+entity registre is
+generic( t_e : integer := 4 ; t_s : integer := 8);  
+port( clk, ld, raz : in std_logic;
+      data_in : in std_logic_vector(t_e-1 downto 0);
+      data_out : out std_logic_vector(t_s-1 downto 0));
+end registre;
+
+architecture arch_registre of registre is
+	signal tmp: std_logic_vector(t_s-t_e-1 downto 0);
+	begin
+	  process(clk,raz)
+	    begin
+	      if (raz='1') then 
+	       data_out <= (others => '0'); 
+	       tmp <= (others => '0');
+	      elsif ((rising_edge(clk))AND ld = '1') then 
+	       if data_in(t_e-1) = '1' then --------***
+	         tmp <= (others => '1');
+	         data_out <= (tmp & data_in);
+	       else 
+	         tmp <= (others => '0');
+	         data_out <= (tmp & data_in);
+	       end if;
+	      end if;
+	 end process;
+end arch_registre;
